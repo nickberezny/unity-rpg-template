@@ -7,5 +7,6 @@ public class ExampleScript : MonoBehaviour
     public float multiply2Numbers(float a, float b)
     {
         return a * b;
+       
     }
 }

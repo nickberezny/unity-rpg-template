@@ -1,12 +1,14 @@
 {
-    "name": "GameCore",
-    "references": [],
+    "name": "Input",
+    "references": [
+        "GUID:d7074909d3b0fa94cac5975611774195"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
