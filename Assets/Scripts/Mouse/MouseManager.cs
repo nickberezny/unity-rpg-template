@@ -9,10 +9,15 @@ namespace RPG.Mouse
     public class MouseManager : MonoBehaviour
     {
 
-        private RaycastHit _hit;
-        private const string groundTag = "Ground";
+        [SerializeField] private UnityEvent<RaycastHit> GroundSelected;
+        [SerializeField] private UnityEvent<RaycastHit> InteractableSelected;
 
-        [SerializeField] private UnityEvent<Vector3> GroundSelected;
+        private RaycastHit _hit;
+
+        private const string groundTag = "Ground";
+        private const string interactableTag = "Interactable";
+
+        
 
 
         void Update()
@@ -54,7 +59,10 @@ namespace RPG.Mouse
             switch (_hit.collider.tag)
             {
                 case groundTag:
-                    GroundSelected.Invoke(_hit.point);
+                    GroundSelected.Invoke(_hit);
+                    break;
+                case interactableTag: 
+                    InteractableSelected.Invoke(_hit);
                     break;
                 default:
                     break;

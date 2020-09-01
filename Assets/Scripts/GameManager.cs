@@ -15,7 +15,6 @@ namespace RPG
         public int Score { get; set; }
         public GameObject player { get; set; }
 
-
         [SerializeField] private UnityEvent PlayerCreated;
         [SerializeField] private GameObject _playerPreFab;
 
