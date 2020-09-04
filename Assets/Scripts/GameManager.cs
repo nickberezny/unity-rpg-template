@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-
+using UnityEngine.SceneManagement;
 
 namespace RPG
 {
@@ -11,8 +11,6 @@ namespace RPG
 
         //Singleton Game Manager...
         public static GameManager Instance { get; private set; }
-
-        public int Score { get; set; }
         public GameObject player { get; set; }
 
         [SerializeField] private UnityEvent PlayerCreated;
@@ -31,22 +29,51 @@ namespace RPG
                 DontDestroyOnLoad(this);
 
                 //temporarily create player at start
-                CreatePlayer(transform);
+                //CreatePlayer(transform, Vector3.zero, Quaternion.identity);
             }
         }
 
-        private void Start()
+        public void StartGame()
         {
-            Score = 10;
+
+            LoadScene("Start", 1);
+
 
         }
 
-        private void CreatePlayer(Transform newTransform)
+        public void LoadScene(string scene, int door)
+        {
+            StartCoroutine(LoadAsyncScene(scene,door));
+            //DataManager.Instance.readData("Assests/Scenes/" + scene + "/data.json", "objectExists");
+        }
+
+
+        private void CreatePlayer(Transform newTransform, Vector3 offset, Quaternion rotationOffset)
         {
             Debug.Log("Creating Player");
             if (player != null) Destroy(player);
-            player = Instantiate(_playerPreFab, newTransform);
+            player = Instantiate(_playerPreFab, newTransform.position + newTransform.TransformVector(offset), newTransform.rotation*rotationOffset);
             PlayerCreated.Invoke();
+
+        }
+
+        private IEnumerator LoadAsyncScene(string scene, int door)
+        {
+
+            DataManager.Instance.initializeLevelData(scene);
+
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene);
+
+            // Wait until the asynchronous scene fully loads
+            while (!asyncLoad.isDone)
+            {
+                yield return null;
+            }
+
+            Debug.Log("Done Loading Scene...");
+            CreatePlayer(GameObject.Find("Door" + door.ToString()).transform, new Vector3(5f,0,0), Quaternion.Euler(0, 90, 0));
+            
+
         }
 
     }

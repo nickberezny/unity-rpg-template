@@ -12,16 +12,33 @@ namespace RPG.Mouse
         [SerializeField] private UnityEvent<RaycastHit> GroundSelected;
         [SerializeField] private UnityEvent<RaycastHit> InteractableSelected;
 
+        private Camera _camera;
+
         private RaycastHit _hit;
 
         private const string groundTag = "Ground";
         private const string interactableTag = "Interactable";
 
-        
-
-
-        void Update()
+        private void Awake()
         {
+            DontDestroyOnLoad(this);
+        }
+
+        private void Update()
+        {
+
+            if(_camera == null)
+            {
+                if(Camera.main == null)
+                {
+                    //Debug.Log("No Camera in Scene for Raycasting...");
+                    return;
+                }
+                else
+                {
+                    _camera = Camera.main;
+                }
+            }
 
             if (EventSystem.current.IsPointerOverGameObject())
             {
@@ -44,12 +61,13 @@ namespace RPG.Mouse
                 else Debug.Log("Nothing to click...");
             }
 
+
         }
 
         private bool CheckRaycastCollision()
         {
             //use raycast to find gameobject intersecting with cursor
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
             return (Physics.Raycast(ray, out _hit));
         }
 

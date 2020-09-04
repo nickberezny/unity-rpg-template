@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +13,11 @@ namespace RPG.Player
         private PlayerAnimator _playerAnimator;
         private GameObject _player;
         private GameObject _selectedObject;
-        
+
+        private delegate void MethodTemp();
+
+        private const float InteractWaitTime = 0.5f;
+
 
         //Singleton Player Manager...
         public static PlayerManager Instance { get; private set; }
@@ -57,13 +62,29 @@ namespace RPG.Player
         public void movePlayer(RaycastHit hit)
         {
             _selectedObject = hit.collider.gameObject;
-            if (_playerMotor != null) _playerMotor.MoveToDestination(hit.point);
+            if (_playerMotor != null)
+            {
+                if (_selectedObject.TryGetComponent(out Interactable interactable)) _playerMotor.MoveToDestination(interactable._interactionTransform.position);
+                else _playerMotor.MoveToDestination(hit.point);
+            }
+                
             else Debug.Log("No player to move");
+        }
+
+        public void faceObject(GameObject gameObject)
+        {
+            if (gameObject != null) _playerMotor.FaceObject(gameObject);
         }
 
         public void reachedDestination()
         {
-            if (_selectedObject != null) _selectedObject.GetComponent<Interactable>().Interact();
+            if (_selectedObject.tag == "Interactable")
+            {
+                faceObject(_selectedObject); 
+                StartCoroutine(ExecuteAfterDelay(_selectedObject.GetComponent<Interactable>().Interact, InteractWaitTime));
+            }
+
+            _selectedObject = null;
         }
 
         private void animatePlayer(string type, float velocity)
@@ -79,6 +100,12 @@ namespace RPG.Player
                     break;
             }
             
+        }
+
+        private IEnumerator ExecuteAfterDelay(MethodTemp method, float time)
+        {
+            yield return new WaitForSeconds(time);
+            method();
         }
     }
 }

@@ -6,15 +6,21 @@ public class Interactable : MonoBehaviour
 {
     [SerializeField] private Transform interactionTransform;
 
-    private void Start()
+    public Transform _interactionTransform {get; private set;}
+
+    private void Awake()
     {
         if (interactionTransform == null)
             interactionTransform = transform;
+
+        //Debug.Log("starting interactable" + name);
+
+        _interactionTransform = interactionTransform;
     }
 
     public virtual void Interact()
     {
         //override ...
-        Debug.Log("interacting with " + name);
+        //Debug.Log("interacting with " + name);
     }
 }
