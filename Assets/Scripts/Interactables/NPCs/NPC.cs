@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class NPC : Interactable
 {
@@ -10,8 +11,7 @@ public class NPC : Interactable
     public override void Interact()
     {
         base.Interact();
-
-        //open dialogue...
+        DialogueMenu.Instance.activateNewDialogue(name, _portrait);
     }
 
 

@@ -5,6 +5,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.ComponentModel.Design;
 using UnityEditor;
+using UnityEngine.Internal.VR;
 
 public class DataManager : MonoBehaviour
 {
@@ -26,6 +27,7 @@ public class DataManager : MonoBehaviour
     }
 
     private Dictionary<string,bool> levelDictionary;
+    private Dictionary<int, DialogueData> dialogueDictionary;
 
     public void resetData()
     {
@@ -81,6 +83,22 @@ public class DataManager : MonoBehaviour
         StreamReader reader = new StreamReader(filepath);
        
         return JsonConvert.DeserializeObject<Dictionary<string, bool>>(reader.ReadToEnd())[objectName];
+    }
+
+    public Dictionary<int,DialogueData> readDialogueData(string filepath)
+    {
+     
+        dialogueDictionary = new Dictionary<int, DialogueData>();
+        StreamReader reader = new StreamReader(filepath);
+        dialogueDictionary = JsonConvert.DeserializeObject<Dictionary<int, DialogueData>>(reader.ReadToEnd());
+        Debug.Log(dialogueDictionary[1].text);
+        reader.Close();
+
+        StreamWriter writer = new StreamWriter("Assets/TestDialogue.json", false);
+        writer.WriteLine(JsonConvert.SerializeObject(dialogueDictionary));
+        writer.Close();
+
+        return dialogueDictionary;
     }
 
     public Dictionary<string, bool> readLevelData(string filepath)

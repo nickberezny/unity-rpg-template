@@ -37,11 +37,15 @@ namespace RPG.Player
 
         private void Update()
         {
-            float velocity = _playerMotor.Velocity;
-            if (velocity > 0f)
+            if(_playerMotor != null)
             {
-                animatePlayer("Walk", velocity);
+                float velocity = _playerMotor.Velocity;
+                if (velocity > 0f)
+                {
+                    animatePlayer("Walk", velocity);
+                }
             }
+            
         }
 
 

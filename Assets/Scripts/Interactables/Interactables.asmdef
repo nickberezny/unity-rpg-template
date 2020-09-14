@@ -2,7 +2,8 @@
     "name": "Interactables",
     "references": [
         "GUID:d7074909d3b0fa94cac5975611774195",
-        "GUID:8a4ce8c4739f251449774a2da3fc13b5"
+        "GUID:8a4ce8c4739f251449774a2da3fc13b5",
+        "GUID:d76836c0459444a4ba3b00686576002e"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
