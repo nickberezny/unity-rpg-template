@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,6 +22,8 @@ public class DialogueMenu : MonoBehaviour
     private Text _currentText;
     private RectTransform viewportRectTransform;
     private string _activeName;
+    private GameObject[] _addedText = new GameObject[100];
+    private int _addedTextIndex = 0;
 
     private const float defaultVerticalOffset = 10f;
     private const float defaultHorizontalOffset = 10f;
@@ -62,11 +65,9 @@ public class DialogueMenu : MonoBehaviour
 
 
         _activeName = name;
-        Debug.Log("Activating");
         dialogueMenuCanvas.enabled = true;
         cameraManager.moveCameraForDialogue(true);
         int[] temp = { 1 };
-        //Debug.Log("temp!" + temp[0].ToString());
         addNextLine(name, temp);
  
     }
@@ -76,6 +77,15 @@ public class DialogueMenu : MonoBehaviour
         dialogueMenuCanvas.enabled = false;
         cameraManager.moveCameraForDialogue(false);
         _activeName = null;
+        _currentText = textBase;
+
+        for(int i = 0; i < _addedTextIndex; i++)
+        {
+            Destroy(_addedText[i]);
+        }
+
+        Array.Clear(_addedText, 0, _addedTextIndex+1);
+        _addedTextIndex = 0;
     }
 
 
@@ -104,6 +114,7 @@ public class DialogueMenu : MonoBehaviour
         else if(len ==1 && _dialogueArray[0].pointer.Length == 1)
         {
             Instantiate(continueButton);
+            addObjectToList(continueButton.gameObject);
             continueButton.transform.position = new Vector2(continueButton.transform.position.x, _previousText.transform.position.y - _previousText.preferredHeight - defaultVerticalOffset);
         }
         
@@ -113,7 +124,6 @@ public class DialogueMenu : MonoBehaviour
 
     private IEnumerator delayedAddLine(float delay, string name, int[] selection)
     {
-        Debug.Log("Waiting to add line");
         yield return new WaitForSeconds(delay);
         addNextLine(name, selection);
 
@@ -125,6 +135,7 @@ public class DialogueMenu : MonoBehaviour
         {
             _previousText = _currentText;
             _currentText = Instantiate(textBase);
+            addObjectToList(_currentText.gameObject);
 
             _currentText.text = text;
             _currentText.transform.SetParent(viewport.transform);
@@ -148,6 +159,13 @@ public class DialogueMenu : MonoBehaviour
     {
         yield return null;
         scrollbar.value = 0;
+    }
+
+    private void addObjectToList(GameObject go)
+    {
+        _addedText[_addedTextIndex] = go;
+        _addedTextIndex += 1;
+        return;
     }
 
 }
