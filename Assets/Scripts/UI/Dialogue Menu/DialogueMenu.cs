@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class DialogueMenu : MonoBehaviour
@@ -9,7 +10,7 @@ public class DialogueMenu : MonoBehaviour
      public static DialogueMenu Instance { get; private set; }
 
     [SerializeField] private Text textBase;
-    [SerializeField] private Button continueButton;
+    [SerializeField] private Button continueButtonBase;
     [SerializeField] private GameObject viewport;
     [SerializeField] private Scrollbar scrollbar;
     [SerializeField] private DialogueManager dialogueManager;
@@ -24,6 +25,7 @@ public class DialogueMenu : MonoBehaviour
     private string _activeName;
     private GameObject[] _addedText = new GameObject[100];
     private int _addedTextIndex = 0;
+    private Button _continueButton = null;
 
     private const float defaultVerticalOffset = 10f;
     private const float defaultHorizontalOffset = 10f;
@@ -68,7 +70,7 @@ public class DialogueMenu : MonoBehaviour
         dialogueMenuCanvas.enabled = true;
         cameraManager.moveCameraForDialogue(true);
         int[] temp = { 1 };
-        addNextLine(name, temp);
+        addNextLine(_activeName, temp);
  
     }
 
@@ -95,6 +97,8 @@ public class DialogueMenu : MonoBehaviour
         int len = selection.Length;
         float horizontalOffset = defaultHorizontalOffset;
 
+        if(_continueButton != null) Destroy(_continueButton.gameObject);
+
         if (len > 1)
         {
             tagAsOption = true;
@@ -104,18 +108,20 @@ public class DialogueMenu : MonoBehaviour
         for(int i = 0; i < len; i++)
         {
             _dialogueArray[i] = dialogueManager.getNextLine(name, selection[i]);
-            addText(_dialogueArray[i].text, defaultVerticalOffset, horizontalOffset, tagAsOption);
+            addText(_dialogueArray[i].text, defaultVerticalOffset, horizontalOffset, tagAsOption, _dialogueArray[i].pointer);
         }
 
         if (len == 1 && _dialogueArray[0].pointer.Length > 1)
         {
             StartCoroutine(delayedAddLine(1f, name, _dialogueArray[0].pointer));
         }
-        else if(len ==1 && _dialogueArray[0].pointer.Length == 1)
+        else if(len == 1 && _dialogueArray[0].pointer.Length == 1)
         {
-            Instantiate(continueButton);
-            addObjectToList(continueButton.gameObject);
-            continueButton.transform.position = new Vector2(continueButton.transform.position.x, _previousText.transform.position.y - _previousText.preferredHeight - defaultVerticalOffset);
+            Debug.Log("Creating Button");
+            _continueButton = Instantiate(continueButtonBase, viewport.transform);
+            addObjectToList(_continueButton.gameObject);
+            _continueButton.transform.position = new Vector2(_continueButton.transform.position.x, _previousText.transform.position.y - _previousText.preferredHeight - defaultVerticalOffset);
+            _continueButton.onClick.AddListener(delegate { addNextLine(name, _dialogueArray[len - 1].pointer);});
         }
         
         
@@ -129,12 +135,13 @@ public class DialogueMenu : MonoBehaviour
 
     }
 
-    private void addText(string text, float verticalOffset, float horizontalOffset, bool tagAsOption)
+    private void addText(string text, float verticalOffset, float horizontalOffset, bool tagAsOption, int[] pointers)
     {
         if (_currentText != null)
         {
             _previousText = _currentText;
             _currentText = Instantiate(textBase);
+            
             addObjectToList(_currentText.gameObject);
 
             _currentText.text = text;
@@ -142,7 +149,16 @@ public class DialogueMenu : MonoBehaviour
             _currentText.transform.position = new Vector2(_previousText.transform.position.x, _previousText.transform.position.y - _previousText.preferredHeight - verticalOffset);
             _currentText.rectTransform.offsetMax = new Vector2(_previousText.rectTransform.offsetMax.x, _currentText.rectTransform.offsetMax.y);
             _currentText.rectTransform.offsetMin = new Vector2(textBase.rectTransform.offsetMin.x + horizontalOffset, _currentText.rectTransform.offsetMin.y);
-            if (tagAsOption) _currentText.tag = "DialogueOption";
+            
+            if (tagAsOption)
+            {
+                _currentText.tag = "DialogueOption";
+                Button tempButton = _currentText.GetComponent<Button>();
+                tempButton.enabled = true; 
+                tempButton.onClick.AddListener(delegate{addNextLine(_activeName, pointers);});
+                Debug.Log("Selection added");
+
+            }
 
             viewportRectTransform.sizeDelta += new Vector2(0, _currentText.preferredHeight + verticalOffset);
             StartCoroutine(zeroScrollbar());
@@ -167,5 +183,6 @@ public class DialogueMenu : MonoBehaviour
         _addedTextIndex += 1;
         return;
     }
+
 
 }

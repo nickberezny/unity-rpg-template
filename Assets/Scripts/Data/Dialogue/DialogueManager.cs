@@ -15,41 +15,12 @@ public class DialogueManager : MonoBehaviour
     DialogueData _data;
     
 
-    
-
     private void Awake()
     {
         _dialogueDictionary = new Dictionary<int, DialogueData>();
         _data = new DialogueData();
         _name = "";
     }
-
-    /*
-    private void Start()
-    {
-        _previousText = textBase;
-        
-        
-        Text newText = Instantiate(textBase);
-
-        newText.text = "hello from dialogue manager manager mananger mananger overflow overflow overflow overflow";
-
-        Canvas.ForceUpdateCanvases();;
-
-        newText.transform.SetParent(viewport.transform);
-        newText.transform.position = new Vector2(_previousText.transform.position.x, _previousText.transform.position.y - _previousText.preferredHeight);
-    
-
-        viewport.GetComponent<RectTransform>().sizeDelta += new Vector2(0, newText.preferredHeight);
-        //newText.rectTransform.offsetMax = new Vector2(_previousText.rectTransform.offsetMax.x, _previousText.rectTransform.offsetMax.y + 100);
-        //newText.rectTransform.offsetMin = new Vector2(_previousText.rectTransform.offsetMin.x, _previousText.rectTransform.offsetMin.y - 100);
-
-        // newText.rectTransform.anchorMax
-
-
-
-    }
-    */
 
     public DialogueData getNextLine(string name, int selection)
     {
