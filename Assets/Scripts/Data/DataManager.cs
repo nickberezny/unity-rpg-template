@@ -11,6 +11,8 @@ public class DataManager : MonoBehaviour
 {
     public static DataManager Instance { get; private set; }
 
+    private JsonSerializerSettings settings = new JsonSerializerSettings();
+
     private void Awake()
     {
         if (Instance != null)
@@ -22,12 +24,15 @@ public class DataManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(this);
+            settings.Formatting = Formatting.Indented;
         }
 
     }
 
     private Dictionary<string,bool> levelDictionary;
     private Dictionary<int, DialogueData> dialogueDictionary;
+    
+    
 
     public void resetData()
     {
@@ -87,15 +92,17 @@ public class DataManager : MonoBehaviour
 
     public Dictionary<int,DialogueData> readDialogueData(string filepath)
     {
+
+        
      
         dialogueDictionary = new Dictionary<int, DialogueData>();
         StreamReader reader = new StreamReader(filepath);
-        dialogueDictionary = JsonConvert.DeserializeObject<Dictionary<int, DialogueData>>(reader.ReadToEnd());
+        dialogueDictionary = JsonConvert.DeserializeObject<Dictionary<int, DialogueData>>(reader.ReadToEnd(), settings);
         Debug.Log(dialogueDictionary[1].text);
         reader.Close();
 
         StreamWriter writer = new StreamWriter("Assets/TestDialogue.json", false);
-        writer.WriteLine(JsonConvert.SerializeObject(dialogueDictionary));
+        writer.WriteLine(JsonConvert.SerializeObject(dialogueDictionary, Formatting.Indented));
         writer.Close();
 
         return dialogueDictionary;

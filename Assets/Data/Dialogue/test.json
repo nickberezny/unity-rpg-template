@@ -1,1 +1,11 @@
-{"1":{"text":"This is 1, it points to 2","pointer":[2],"active":true},"2":{"text":"hello 8","pointer":[1],"active":true}}
+{
+	"1":
+	{
+		"text":"This is 1, it points to 2",
+		"pointer":[2],"active":true},
+	"2":
+	{
+		"text":"hello 9",
+		"pointer":[1],"active":true
+	}
+}
