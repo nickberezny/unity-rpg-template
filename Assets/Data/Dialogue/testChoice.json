@@ -1,1 +1,41 @@
-{"1":{"text":"'Choose an option:'","pointer":[2,3,4],"active":true},"2":{"text":"This is 2","pointer":[5],"active":true},"3":{"text":"This is 3","pointer":[5],"active":true},"4":{"text":"This is 4","pointer":[5],"active":true},"5":{"text":"This is 5","pointer":[1],"active":true}}
+{
+	"-1":
+	{
+		"entryState": 1
+	},
+	"1":
+	{
+		"text":"'Choose an option:'",
+		"pointer":[2,3,4],
+		"states":["testStateTrue"],
+		"active":true
+	},
+	"2":
+	{
+		"text":"This is 2",
+		"pointer":[5],
+		"states":["testStateTrue"],
+		"active":true
+	},
+	"3":
+	{
+		"text":"This is 3",
+		"pointer":[5],
+		"states":["testStateFalse"],
+		"active":true
+	},
+	"4":
+	{
+		"text":"This is 4",
+		"pointer":[5],
+		"states":["testStateTrue"],
+		"active":true
+	},
+	"5":
+	{
+		"text":"This is 5",
+		"pointer":[1],
+		"states":["testStateTrue"],
+		"active":true
+	}
+}

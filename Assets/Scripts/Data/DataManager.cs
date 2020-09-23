@@ -6,12 +6,19 @@ using Newtonsoft.Json;
 using System.ComponentModel.Design;
 using UnityEditor;
 using UnityEngine.Internal.VR;
+using System.Dynamic;
 
 public class DataManager : MonoBehaviour
 {
     public static DataManager Instance { get; private set; }
 
     private JsonSerializerSettings settings = new JsonSerializerSettings();
+
+    private Dictionary<string, bool> levelDictionary;
+    private Dictionary<int, DialogueData> dialogueDictionary;
+    private Dictionary<string, bool> stateDictionary;
+
+    private const string pathToStates = "Assets/Data/States.json";
 
     private void Awake()
     {
@@ -25,14 +32,11 @@ public class DataManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(this);
             settings.Formatting = Formatting.Indented;
+            stateDictionary = loadGameState();
+            stateDictionary.Add("null", true);
         }
 
     }
-
-    private Dictionary<string,bool> levelDictionary;
-    private Dictionary<int, DialogueData> dialogueDictionary;
-    
-    
 
     public void resetData()
     {
@@ -59,6 +63,56 @@ public class DataManager : MonoBehaviour
         }
 
 
+    }
+
+    public bool getGameState(string key)
+    {
+        return stateDictionary[key];
+    }
+
+    public void setGameStateTrue(string[] key)
+    {
+        //Debug.Log(key[0]);
+        if(key != null)
+        {
+            for (int i = 0; i < key.Length; i++)
+            {
+                if (stateDictionary.TryGetValue(key[i], out bool val))
+                {
+                    Debug.Log("Setting state : " + key[i]);
+                    stateDictionary[key[i]] = true;
+                }
+                else
+                {
+                    Debug.Log("State doesn't exist...");
+                }
+            }
+        }
+    }
+
+    public void setGameStateFalse(string[] key)
+    {
+        if (key != null)
+        {
+            for (int i = 0; i < key.Length; i++)
+            {
+                if (stateDictionary.TryGetValue(key[i], out bool val))
+                {
+                    stateDictionary[key[i]] = false;
+                }
+                else
+                {
+                    Debug.Log("State doesn't exist...");
+                }
+            }
+        }
+
+    }
+
+    private Dictionary<string,bool> loadGameState()
+    {
+        StreamReader reader = new StreamReader(pathToStates);
+        return JsonConvert.DeserializeObject<Dictionary<string, bool>>(reader.ReadToEnd());
     }
 
     public void initializeLevelData(string sceneName)
@@ -92,8 +146,6 @@ public class DataManager : MonoBehaviour
 
     public Dictionary<int,DialogueData> readDialogueData(string filepath)
     {
-
-        
      
         dialogueDictionary = new Dictionary<int, DialogueData>();
         StreamReader reader = new StreamReader(filepath);
@@ -107,6 +159,18 @@ public class DataManager : MonoBehaviour
 
         return dialogueDictionary;
     }
+
+    public void writeDialogueData(string filepath, Dictionary<int, DialogueData> dict)
+    {
+        StreamWriter writer = new StreamWriter(filepath, false);
+        writer.WriteLine(JsonConvert.SerializeObject(dict, Formatting.Indented));
+        writer.Close();
+
+        Debug.Log("Dialogue Data saved");
+
+        return;
+    }
+
 
     public Dictionary<string, bool> readLevelData(string filepath)
     {

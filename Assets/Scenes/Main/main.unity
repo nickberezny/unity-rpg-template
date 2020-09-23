@@ -205,9 +205,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1963644591}
-        m_TargetAssemblyTypeName: DialogueMenu, UI
-        m_MethodName: closeMenu
+      - m_Target: {fileID: 2122847863}
+        m_TargetAssemblyTypeName: DialogueManager, UI
+        m_MethodName: closeDialogue
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2121,7 +2121,7 @@ MonoBehaviour:
   scrollbar: {fileID: 199543625}
   dialogueManager: {fileID: 2122847863}
   cameraManager: {fileID: 1663107074}
-  portraitImage: {fileID: 0}
+  portraitImage: {fileID: 1572940958}
 --- !u!1 &2111875416
 GameObject:
   m_ObjectHideFlags: 0
@@ -2375,6 +2375,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   viewport: {fileID: 1226318806}
   textBase: {fileID: 1661664937}
+  dialogueMenu: {fileID: 1963644591}
+  defaultPortrait: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!4 &2122847864
 Transform:
   m_ObjectHideFlags: 0

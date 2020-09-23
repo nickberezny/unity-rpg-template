@@ -1,11 +1,21 @@
 {
+	"-1":
+	{
+		"entryState": 1
+	},
 	"1":
 	{
 		"text":"This is 1, it points to 2",
-		"pointer":[2],"active":true},
+		"pointer":[2],
+		"states":["null"],
+		"active":true
+	},
 	"2":
 	{
 		"text":"hello 9",
-		"pointer":[1],"active":true
+		"pointer":[1],
+		"states":["testStateTrue"],
+		"active":true
 	}
 }
+

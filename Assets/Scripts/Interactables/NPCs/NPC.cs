@@ -11,7 +11,7 @@ public class NPC : Interactable
     public override void Interact()
     {
         base.Interact();
-        DialogueMenu.Instance.activateNewDialogue(name, _portrait);
+        DialogueManager.Instance.activateNewDialogue(name, _portrait);
     }
 
 
