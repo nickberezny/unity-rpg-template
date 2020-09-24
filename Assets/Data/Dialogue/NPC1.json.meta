@@ -1,7 +1,85 @@
-fileFormatVersion: 2
-guid: 15f4a860f0f7e414da17adbb4e775d3a
-TextScriptImporter:
-  externalObjects: {}
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+{
+  "-1": {
+    "text": null,
+    "pointer": null,
+    "states": null,
+    "statesToSetTrue": null,
+    "statesToSetFalse": null,
+    "active": false,
+    "entryState": 1,
+    "newEntryState": 0
+  },
+  "1": {
+    "text": "Hello",
+    "pointer": [
+      2
+    ],
+    "states": [
+      "null"
+    ],
+    "statesToSetTrue": null,
+    "statesToSetFalse": null,
+    "active": true,
+    "entryState": 0,
+    "newEntryState": 0
+  },
+  "2": {
+    "text": "What's his name?",
+    "pointer": [
+      3,
+      4
+    ],
+    "states": [
+      "null"
+    ],
+    "statesToSetTrue": null,
+    "statesToSetFalse": null,
+    "active": true,
+    "entryState": 0,
+    "newEntryState": 0
+  },
+  "3": {
+    "text": "I don't know",
+    "pointer": [
+      0
+    ],
+    "states": [
+      "null"
+    ],
+    "statesToSetTrue": [
+      "NPC1_question"
+    ],
+    "statesToSetFalse": null,
+    "active": true,
+    "entryState": 0,
+    "newEntryState": 0
+  },
+  "4": {
+    "text": "Donald Duck",
+    "pointer": [
+      5
+    ],
+    "states": [
+      "NPC2_name"
+    ],
+    "statesToSetTrue": null,
+    "statesToSetFalse": null,
+    "active": true,
+    "entryState": 0,
+    "newEntryState": 0
+  },
+  "5": {
+    "text": "Thanks",
+    "pointer": [
+      0
+    ],
+    "states": [
+      "null"
+    ],
+    "statesToSetTrue": null,
+    "statesToSetFalse": null,
+    "active": true,
+    "entryState": 0,
+    "newEntryState": 5
+  }
+}

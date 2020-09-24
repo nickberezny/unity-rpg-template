@@ -1,41 +1,84 @@
 {
-	"-1":
-	{
-		"entryState": 1
-	},
-	"1":
-	{
-		"text":"'Choose an option:'",
-		"pointer":[2,3,4],
-		"states":["testStateTrue"],
-		"active":true
-	},
-	"2":
-	{
-		"text":"This is 2",
-		"pointer":[5],
-		"states":["testStateTrue"],
-		"active":true
-	},
-	"3":
-	{
-		"text":"This is 3",
-		"pointer":[5],
-		"states":["testStateFalse"],
-		"active":true
-	},
-	"4":
-	{
-		"text":"This is 4",
-		"pointer":[5],
-		"states":["testStateTrue"],
-		"active":true
-	},
-	"5":
-	{
-		"text":"This is 5",
-		"pointer":[1],
-		"states":["testStateTrue"],
-		"active":true
-	}
+  "-1": {
+    "text": null,
+    "pointer": null,
+    "states": null,
+    "statesToSetTrue": null,
+    "statesToSetFalse": null,
+    "active": false,
+    "entryState": 1,
+    "newEntryState": 0
+  },
+  "1": {
+    "text": "'Choose an option:'",
+    "pointer": [
+      2,
+      3,
+      4
+    ],
+    "states": [
+      "testStateTrue"
+    ],
+    "statesToSetTrue": null,
+    "statesToSetFalse": null,
+    "active": true,
+    "entryState": 0,
+    "newEntryState": 0
+  },
+  "2": {
+    "text": "This is 2",
+    "pointer": [
+      5
+    ],
+    "states": [
+      "testStateTrue"
+    ],
+    "statesToSetTrue": null,
+    "statesToSetFalse": null,
+    "active": true,
+    "entryState": 0,
+    "newEntryState": 0
+  },
+  "3": {
+    "text": "This is 3",
+    "pointer": [
+      5
+    ],
+    "states": [
+      "testStateFalse"
+    ],
+    "statesToSetTrue": null,
+    "statesToSetFalse": null,
+    "active": true,
+    "entryState": 0,
+    "newEntryState": 0
+  },
+  "4": {
+    "text": "This is 4",
+    "pointer": [
+      5
+    ],
+    "states": [
+      "testStateTrue"
+    ],
+    "statesToSetTrue": null,
+    "statesToSetFalse": null,
+    "active": true,
+    "entryState": 0,
+    "newEntryState": 0
+  },
+  "5": {
+    "text": "This is 5",
+    "pointer": [
+      1
+    ],
+    "states": [
+      "testStateTrue"
+    ],
+    "statesToSetTrue": null,
+    "statesToSetFalse": null,
+    "active": true,
+    "entryState": 0,
+    "newEntryState": 0
+  }
 }

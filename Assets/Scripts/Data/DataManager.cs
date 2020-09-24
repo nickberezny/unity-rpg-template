@@ -33,7 +33,15 @@ public class DataManager : MonoBehaviour
             DontDestroyOnLoad(this);
             settings.Formatting = Formatting.Indented;
             stateDictionary = loadGameState();
-            stateDictionary.Add("null", true);
+            //stateDictionary.Add("null", true);
+            if(stateDictionary.TryGetValue("null", out bool trash))
+            {
+                stateDictionary["null"] = true;
+            }
+            else
+            {
+                stateDictionary.Add("null", true);
+            }
         }
 
     }
@@ -49,7 +57,6 @@ public class DataManager : MonoBehaviour
         {
             string level = levels[i].Substring(0, levels[i].Length ); //remove backslash
 
-            Debug.Log(level);
             StreamReader reader = new StreamReader(level + "/Data_original.json");
             string data = reader.ReadToEnd();
 
@@ -59,9 +66,35 @@ public class DataManager : MonoBehaviour
             reader.Close();
             writer.Close();
 
-            
         }
 
+        string[] dialogue = Directory.GetFiles("Assets/Data/Dialogue");
+
+        for(int i = 0; i< dialogue.Length; i++)
+        {
+            Debug.Log(dialogue[i]);
+            dialogue[i].Replace("\\","/");
+            Dictionary<int, DialogueData> dict = readDialogueData(dialogue[i]);
+            dict[-1].entryState = 1;
+            writeDialogueData(dialogue[i], dict);
+
+        }
+
+        string[] tempKeys = new string[stateDictionary.Count];
+        int j = 0;
+
+        foreach(KeyValuePair<string,bool> keys in stateDictionary )
+        {
+            tempKeys[j] = keys.Key;
+            j = j + 1;
+        }
+
+        for(int i = 0; i < tempKeys.Length; i++)
+        {
+            if(tempKeys[i] != "null") stateDictionary[tempKeys[i]] = false;
+        }
+
+        saveGameState(stateDictionary);
 
     }
 
@@ -72,7 +105,6 @@ public class DataManager : MonoBehaviour
 
     public void setGameStateTrue(string[] key)
     {
-        //Debug.Log(key[0]);
         if(key != null)
         {
             for (int i = 0; i < key.Length; i++)
@@ -115,6 +147,17 @@ public class DataManager : MonoBehaviour
         return JsonConvert.DeserializeObject<Dictionary<string, bool>>(reader.ReadToEnd());
     }
 
+
+
+    private void saveGameState(Dictionary<string, bool> gameStates)
+    {
+        StreamWriter writer = new StreamWriter(pathToStates, false);
+        writer.WriteLine(JsonConvert.SerializeObject(gameStates, settings));
+        writer.Close();
+    }
+
+
+
     public void initializeLevelData(string sceneName)
     {
         string filepath = "Assets/Scenes/" + sceneName;
@@ -150,7 +193,7 @@ public class DataManager : MonoBehaviour
         dialogueDictionary = new Dictionary<int, DialogueData>();
         StreamReader reader = new StreamReader(filepath);
         dialogueDictionary = JsonConvert.DeserializeObject<Dictionary<int, DialogueData>>(reader.ReadToEnd(), settings);
-        Debug.Log(dialogueDictionary[1].text);
+        //Debug.Log(dialogueDictionary[1].text);
         reader.Close();
 
         StreamWriter writer = new StreamWriter("Assets/TestDialogue.json", false);

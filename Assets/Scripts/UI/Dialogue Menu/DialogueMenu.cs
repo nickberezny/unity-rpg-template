@@ -72,6 +72,7 @@ public class DialogueMenu : MonoBehaviour
         cameraManager.moveCameraForDialogue(false);
         _activeName = null;
         _currentText = textBase;
+        _previousText = _currentText;
 
         for(int i = 0; i < _addedTextIndex; i++)
         {
@@ -154,8 +155,10 @@ public class DialogueMenu : MonoBehaviour
 
     private void addText(DialogueData dialogueData, float verticalOffset, float horizontalOffset, bool tagAsOption)
     {
+        Debug.Log("added text");
         if (_currentText != null)
         {
+            Debug.Log("added text");
             _previousText = _currentText;
             _currentText = Instantiate(textBase);
             

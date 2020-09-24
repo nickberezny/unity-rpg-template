@@ -1,6 +1,7 @@
 {
-	"testStateFalse": false,
-	"testStateTrue": true,
-	"NPC2_name": false,
-	"NPC1_question": false
+  "testStateFalse": false,
+  "testStateTrue": false,
+  "NPC2_name": false,
+  "NPC1_question": false,
+  "null": true
 }

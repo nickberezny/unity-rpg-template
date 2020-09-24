@@ -1,7 +1,6 @@
-fileFormatVersion: 2
-guid: a6075fdde7e2d0b4086b61fdac12ae03
-TextScriptImporter:
-  externalObjects: {}
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+{
+	"testStateFalse": false,
+	"testStateTrue": true,
+	"NPC2_name": false,
+	"NPC1_question": false
+}
