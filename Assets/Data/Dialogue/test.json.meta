@@ -1,40 +1,7 @@
-{
-  "-1": {
-    "text": null,
-    "pointer": null,
-    "states": null,
-    "statesToSetTrue": null,
-    "statesToSetFalse": null,
-    "active": false,
-    "entryState": 1,
-    "newEntryState": 0
-  },
-  "1": {
-    "text": "This is 1, it points to 2",
-    "pointer": [
-      2
-    ],
-    "states": [
-      "null"
-    ],
-    "statesToSetTrue": null,
-    "statesToSetFalse": null,
-    "active": true,
-    "entryState": 0,
-    "newEntryState": 0
-  },
-  "2": {
-    "text": "hello 9",
-    "pointer": [
-      1
-    ],
-    "states": [
-      "testStateTrue"
-    ],
-    "statesToSetTrue": null,
-    "statesToSetFalse": null,
-    "active": true,
-    "entryState": 0,
-    "newEntryState": 0
-  }
-}
+fileFormatVersion: 2
+guid: 2373c646d2961a640a48767753dbbaf9
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

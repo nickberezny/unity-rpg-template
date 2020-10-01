@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+
 public class DialogueMenu : MonoBehaviour
 { 
 
@@ -15,20 +16,24 @@ public class DialogueMenu : MonoBehaviour
     [SerializeField] private DialogueManager dialogueManager;
     [SerializeField] private CameraManager cameraManager;
     [SerializeField] private Image portraitImage;
+    [SerializeField] private Color textDeactivatedColor;
 
     private Canvas dialogueMenuCanvas;
     private DialogueData[] _dialogueArray = new DialogueData[6];
     private Text _previousText;
+    private Text _previousTextSave;
     private Text _currentText;
     private RectTransform viewportRectTransform;
     private string _activeName;
     private GameObject[] _addedText = new GameObject[100];
     private int _addedTextIndex = 0;
     private Button _continueButton = null;
+    private List<GameObject> toDestroy = new List<GameObject>();
+
 
     private const float defaultVerticalOffset = 10f;
     private const float defaultHorizontalOffset = 10f;
-    private const float horizontalIndent = 5f;
+    private const float horizontalIndent = 15f;
 
 
     private void Awake()
@@ -42,8 +47,6 @@ public class DialogueMenu : MonoBehaviour
         
     }
     
-
-
     public void activateNewDialogue(string name, Sprite portrait, int entryState)
     {
         if(_activeName != null || dialogueMenuCanvas.enabled)
@@ -86,6 +89,8 @@ public class DialogueMenu : MonoBehaviour
 
     private void addNextLine(string name, int[] selection)
     {
+        toDestroy.Clear();
+        bool addNPCName = false;
 
         if(selection[0] == 0)
         {
@@ -107,6 +112,7 @@ public class DialogueMenu : MonoBehaviour
         {
             tagAsOption = true;
             horizontalOffset += horizontalIndent;
+            _previousTextSave = _currentText;
         }
 
         for(int i = 0; i < len; i++)
@@ -124,7 +130,9 @@ public class DialogueMenu : MonoBehaviour
                 }
             }
 
-            if(checkStates) addText(_dialogueArray[i], defaultVerticalOffset, horizontalOffset, tagAsOption);
+            if (len == 1) addNPCName = true;
+
+            if (checkStates) addText(_dialogueArray[i], defaultVerticalOffset, horizontalOffset, tagAsOption, addNPCName);
         }
 
         if (len == 1 && _dialogueArray[0].pointer.Length > 1)
@@ -153,18 +161,35 @@ public class DialogueMenu : MonoBehaviour
 
     }
 
-    private void addText(DialogueData dialogueData, float verticalOffset, float horizontalOffset, bool tagAsOption)
+    private void deleteText()
     {
-        Debug.Log("added text");
+        foreach(GameObject gameObject in toDestroy)
+        {
+            GameObject.Destroy(gameObject);
+        }
+        
+    }
+
+    private void addText(DialogueData dialogueData, float verticalOffset, float horizontalOffset, bool tagAsOption, bool addNPCName = true, bool addYou = false)
+    {
         if (_currentText != null)
         {
-            Debug.Log("added text");
             _previousText = _currentText;
             _currentText = Instantiate(textBase);
-            
+            toDestroy.Add(_currentText.gameObject);
+
             addObjectToList(_currentText.gameObject);
 
-            _currentText.text = dialogueData.text ;
+            if (addNPCName) _currentText.text = _activeName.ToUpper() + " : " + dialogueData.text;
+            else if (addYou)
+            {
+                _currentText.text = "YOU : " + dialogueData.text;
+                _previousText = _previousTextSave;
+            }
+            else _currentText.text = dialogueData.text;
+
+           
+
             _currentText.transform.SetParent(viewport.transform);
             _currentText.transform.position = new Vector2(_previousText.transform.position.x, _previousText.transform.position.y - _previousText.preferredHeight - verticalOffset);
             _currentText.rectTransform.offsetMax = new Vector2(_previousText.rectTransform.offsetMax.x, _currentText.rectTransform.offsetMax.y);
@@ -175,8 +200,10 @@ public class DialogueMenu : MonoBehaviour
                 string name = _activeName;
                 _currentText.tag = "DialogueOption";
                 Button tempButton = _currentText.GetComponent<Button>();
-                tempButton.enabled = true; 
-                tempButton.onClick.AddListener(delegate{addNextLine(_activeName, dialogueData.pointer);});
+                tempButton.enabled = true;
+                tempButton.onClick.AddListener(delegate { deleteText(); });
+                tempButton.onClick.AddListener(delegate {addText(dialogueData, verticalOffset, horizontalOffset - horizontalIndent, false, false, true); });
+                tempButton.onClick.AddListener(delegate { StartCoroutine(delayedAddLine(1f, name, _dialogueArray[0].pointer)); });//addNextLine(_activeName, dialogueData.pointer);});
                 tempButton.onClick.AddListener(delegate { DataManager.Instance.setGameStateTrue(dialogueData.statesToSetTrue); });
                 tempButton.onClick.AddListener(delegate { DataManager.Instance.setGameStateFalse(dialogueData.statesToSetFalse); });
                 if (dialogueData.newEntryState > 0) tempButton.onClick.AddListener(delegate { dialogueManager.setEntryState(name, dialogueData.newEntryState);  });

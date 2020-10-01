@@ -206,7 +206,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2122847863}
-        m_TargetAssemblyTypeName: DialogueManager2, UI
+        m_TargetAssemblyTypeName: DialogueManager, UI
         m_MethodName: closeDialogue
         m_Mode: 1
         m_Arguments:
@@ -2112,14 +2112,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1963644586}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67b9f15eb0e52624ca03c3cffdf5dc81, type: 3}
+  m_Script: {fileID: 11500000, guid: d7f9a51e40e23a446b5a5caec85974bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   textBase: {fileID: 1661664937}
-  viewport: {fileID: 2114160575}
-  scrollbar: {fileID: 199543625}
   continueButtonBase: {fileID: 653309756}
-  selectedColor: {r: 0.5188679, g: 0.5188679, b: 0.5188679, a: 1}
+  viewport: {fileID: 1226318806}
+  scrollbar: {fileID: 199543625}
+  dialogueManager: {fileID: 2122847863}
+  cameraManager: {fileID: 1663107074}
+  portraitImage: {fileID: 1572940958}
+  textDeactivatedColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0}
 --- !u!1 &2111875416
 GameObject:
   m_ObjectHideFlags: 0
@@ -2368,11 +2371,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2122847862}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc49e6fad6a76424ab357cbae3c7c528, type: 3}
+  m_Script: {fileID: 11500000, guid: f1fbfa1b3abd7ab40a83347c32a0b6a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultPortrait: {fileID: 0}
+  viewport: {fileID: 1226318806}
+  textBase: {fileID: 1661664937}
   dialogueMenu: {fileID: 1963644591}
+  defaultPortrait: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!4 &2122847864
 Transform:
   m_ObjectHideFlags: 0

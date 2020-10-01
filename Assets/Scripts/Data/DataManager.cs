@@ -53,6 +53,7 @@ public class DataManager : MonoBehaviour
         string filepath = "Assets/Scenes";
 
         string[] levels = Directory.GetDirectories(filepath);
+    
         for(int i = 0; i< levels.Length; i++)
         {
             string level = levels[i].Substring(0, levels[i].Length ); //remove backslash
@@ -68,11 +69,12 @@ public class DataManager : MonoBehaviour
 
         }
 
-        string[] dialogue = Directory.GetFiles("Assets/Data/Dialogue");
+        string[] dialogue = Directory.GetFiles("Assets/Data/Dialogue","*json");
+        
 
         for(int i = 0; i< dialogue.Length; i++)
         {
-            Debug.Log(dialogue[i]);
+            
             dialogue[i].Replace("\\","/");
             Dictionary<int, DialogueData> dict = readDialogueData(dialogue[i]);
             dict[-1].entryState = 1;
@@ -193,7 +195,7 @@ public class DataManager : MonoBehaviour
         dialogueDictionary = new Dictionary<int, DialogueData>();
         StreamReader reader = new StreamReader(filepath);
         dialogueDictionary = JsonConvert.DeserializeObject<Dictionary<int, DialogueData>>(reader.ReadToEnd(), settings);
-        //Debug.Log(dialogueDictionary[1].text);
+        Debug.Log(dialogueDictionary[1].text);
         reader.Close();
 
         StreamWriter writer = new StreamWriter("Assets/TestDialogue.json", false);

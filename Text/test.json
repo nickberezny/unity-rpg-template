@@ -1,1 +1,25 @@
-{"1":{"text":"Test Text Hello","pointer":[]}{"2":{"text":"Test","pointer":[4, 5]}{"3":{"text":"Test","pointer":[4, 6]}{"4":{"text":"Test","pointer":[1]}
+{
+	"-1":{
+		"entryState":1
+	},
+	"1":{
+		"text":"Test Text Hello N",
+		"pointer":[2, 3],
+		"states":["null"]
+	},
+	"2":{
+		"text":"Test 1",
+		"pointer":[4],
+		"states":["null"]
+	},
+	"3":{
+		"text":"Test 2",
+		"pointer":[4],
+		"states":["null"]
+	},
+	"4":{
+		"text":"Test 3",
+		"pointer":[1],
+		"states":["null"]
+	}
+}
