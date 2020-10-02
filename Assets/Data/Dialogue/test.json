@@ -20,7 +20,7 @@
     ],
     "statesToSetTrue": null,
     "statesToSetFalse": null,
-    "active": false,
+    "active": true,
     "entryState": 0,
     "newEntryState": 0
   },
@@ -34,7 +34,7 @@
     ],
     "statesToSetTrue": null,
     "statesToSetFalse": null,
-    "active": false,
+    "active": true,
     "entryState": 0,
     "newEntryState": 0
   },
@@ -48,12 +48,12 @@
     ],
     "statesToSetTrue": null,
     "statesToSetFalse": null,
-    "active": false,
+    "active": true,
     "entryState": 0,
     "newEntryState": 0
   },
   "4": {
-    "text": "Test 3",
+    "text": "Long sentence test Two circular markers were affixed on the side of the participants, one large green marker at the hip and one smaller blue marker at the ankle. Video feed",
     "pointer": [
       1
     ],
@@ -62,7 +62,7 @@
     ],
     "statesToSetTrue": null,
     "statesToSetFalse": null,
-    "active": false,
+    "active": true,
     "entryState": 0,
     "newEntryState": 0
   }

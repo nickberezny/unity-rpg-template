@@ -14,7 +14,10 @@ namespace RPG
         public GameObject player { get; set; }
 
         [SerializeField] private UnityEvent PlayerCreated;
+        [SerializeField] private UnityEvent<bool> MenuStatusChanged = new UnityEvent<bool>();
         [SerializeField] private GameObject _playerPreFab;
+
+        [SerializeField] private Canvas HUD;
 
         private void Awake()
         {
@@ -37,6 +40,7 @@ namespace RPG
         {
 
             LoadScene("Start", 1);
+            HUD.enabled = true;
 
 
         }
@@ -45,6 +49,11 @@ namespace RPG
         {
             StartCoroutine(LoadAsyncScene(scene,door));
             //DataManager.Instance.readData("Assests/Scenes/" + scene + "/data.json", "objectExists");
+        }
+
+        public void setMenuOpen(bool open)
+        {
+            MenuStatusChanged.Invoke(open);
         }
 
 

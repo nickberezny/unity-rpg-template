@@ -10,6 +10,7 @@ public class DialogueMenu2 : MonoBehaviour
 
     [SerializeField] private Text textBase;
     [SerializeField] private GameObject viewport;
+    [SerializeField] private GameObject content;
     [SerializeField] private Scrollbar scrollbar;
     [SerializeField] private Button continueButtonBase;
     [SerializeField] Color selectedColor;
@@ -22,16 +23,19 @@ public class DialogueMenu2 : MonoBehaviour
     private RectTransform viewportRectTransform;
     private Canvas dialogueMenuCanvas;
     private Button _continueButton = null;
+    private float _defualtContentHeight;
 
     private const float defaultVerticalOffset = 10f;
     private const float defaultHorizontalOffset = 10f;
     private const float defaultHorizontalIndent = 20f;
+    private const float scrollbarVelocity = 0.01f;
 
     private void Awake()
     {
         DontDestroyOnLoad(this);
-        viewportRectTransform = viewport.GetComponent<RectTransform>();
-
+        viewportRectTransform = content.GetComponent<RectTransform>();
+        _defualtContentHeight = viewportRectTransform.sizeDelta.y;
+    
         dialogueMenuCanvas = gameObject.GetComponent<Canvas>();
         dialogueMenuCanvas.enabled = false;
 
@@ -45,20 +49,23 @@ public class DialogueMenu2 : MonoBehaviour
         _previousText = _addedText[_textIndex];
         addToTextArray(_currentText);
 
-        _currentText.text = speakerName + " : " + text;
+        string nameColor = "lightblue";
+        if (speakerName == "You") nameColor = "#BE9CD0";
 
-        _currentText.transform.SetParent(viewport.transform);
+        _currentText.text = "<color=" + nameColor + "><size=20>" + speakerName + "</size></color> : " + text;
+
+        _currentText.transform.SetParent(content.transform);
         _currentText.transform.position = new Vector2(_previousText.transform.position.x, _previousText.transform.position.y - _previousText.preferredHeight - defaultVerticalOffset);
         _currentText.rectTransform.offsetMax = new Vector2(_previousText.rectTransform.offsetMax.x, _currentText.rectTransform.offsetMax.y);
         _currentText.rectTransform.offsetMin = new Vector2(textBase.rectTransform.offsetMin.x + defaultHorizontalOffset + horizontalIndent, _currentText.rectTransform.offsetMin.y);
 
-        viewportRectTransform.sizeDelta += new Vector2(0, _currentText.preferredHeight + defaultVerticalOffset);
+        viewportRectTransform.sizeDelta += new Vector2(0, _currentText.preferredHeight);// + defaultVerticalOffset);
 
         if(addContinueButton)
         {
             Debug.Log("Creating Button");
-            _continueButton = Instantiate(continueButtonBase, viewport.transform);
-            _continueButton.transform.position = new Vector2(_continueButton.transform.position.x, _previousText.transform.position.y - _previousText.preferredHeight - defaultVerticalOffset);
+            _continueButton = Instantiate(continueButtonBase, content.transform);
+            _continueButton.transform.position = new Vector2(_continueButton.transform.position.x, _currentText.transform.position.y - _currentText.preferredHeight);
             _continueButton.onClick.AddListener(delegate { DialogueManager2.Instance.continueToNextLine(0); });
         }
 
@@ -80,14 +87,14 @@ public class DialogueMenu2 : MonoBehaviour
                 ColorBlock cb = tempButton.colors;
                 cb.normalColor = selectedColor;
                 tempButton.colors = cb;
-                Debug.Log("Changing colours");
             }
             tempButton.enabled = true;
             int tempIndex = i;
             tempButton.onClick.AddListener(delegate { deleteOptions(tempIndex); });
-            Debug.Log("Selection added");
 
         }
+
+        StartCoroutine(zeroScrollbar());
     }
 
     private void deleteOptions(int exception)
@@ -103,6 +110,8 @@ public class DialogueMenu2 : MonoBehaviour
             _textIndex--;
         }
 
+        saveException = saveException.Split(':')[1];
+
         addText(saveException, "You", false);
   
         DialogueManager2.Instance.continueToNextLine(exception, true);
@@ -113,7 +122,13 @@ public class DialogueMenu2 : MonoBehaviour
         if (!dialogueMenuCanvas.enabled)
         {
             dialogueMenuCanvas.enabled = true;
+            _textIndex = 0;
+            _addedText = new Text[100];
+            _addedText[0] = textBase;
+            _optionIndices = new int[5];
+
             return true;
+
         }
         else
         {
@@ -130,15 +145,23 @@ public class DialogueMenu2 : MonoBehaviour
             Debug.Log(i);
         }
         _textIndex = 0;
+        viewportRectTransform.sizeDelta = new Vector2(viewportRectTransform.sizeDelta.x, _defualtContentHeight);
         dialogueMenuCanvas.enabled = false;
-
+        
 
     }
 
     private IEnumerator zeroScrollbar()
     {
-        yield return null;
-        scrollbar.value = 0;
+        yield return new WaitForEndOfFrame();
+        Debug.Log("Zeroing Scrollbar");
+        while(scrollbar.value > 0)
+        {
+            scrollbar.value -= scrollbarVelocity;
+            yield return null;
+        }
+        
+        
     }
 
     public void addToTextArray(Text newText)

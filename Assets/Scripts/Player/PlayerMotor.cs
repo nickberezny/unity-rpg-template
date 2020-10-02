@@ -18,13 +18,15 @@ namespace RPG.Player
 
         private NavMeshAgent _playerAgent;
         private Coroutine _TrackMovement;
-        public int Velocity { get; set; }
+        private float _defaultSpeed;
 
+        public int Velocity { get; set; }
 
         public void Awake()
         {
             _player = gameObject;
             _playerAgent = _player.GetComponent<NavMeshAgent>();
+            _defaultSpeed = _playerAgent.speed;
         }
 
         public void MoveToDestination(Vector3 destination)
@@ -67,6 +69,30 @@ namespace RPG.Player
 
                 yield return new WaitForSeconds(waitTimeForRotation);
             }
+
+        }
+
+        public void stopMovement()
+        {
+            StopCoroutine(TrackMovement());
+            StartCoroutine(stopSlowly(1));
+        }
+
+        private IEnumerator stopSlowly(float time)
+        {
+            int i = 0;
+            
+            while(i< 30)
+            {
+                _playerAgent.speed = _playerAgent.speed / 2;
+                i++;
+                yield return new WaitForSeconds(time / 30);
+            }
+            _playerAgent.isStopped = true;
+            MoveToDestination(_player.transform.position);
+            _playerAgent.isStopped = false;
+            _playerAgent.speed = _defaultSpeed;
+
 
         }
 

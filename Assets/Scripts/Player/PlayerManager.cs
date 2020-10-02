@@ -8,11 +8,14 @@ namespace RPG.Player
 {
     public class PlayerManager : MonoBehaviour
     {
-        
+
+        public bool isMenuOpen { get; private set; }
+
         private PlayerMotor _playerMotor;
         private PlayerAnimator _playerAnimator;
         private GameObject _player;
         private GameObject _selectedObject;
+
 
         private delegate void MethodTemp();
 
@@ -32,12 +35,14 @@ namespace RPG.Player
             {
                 Instance = this;
                 DontDestroyOnLoad(this);
+
+                isMenuOpen = false;
             }
         }
 
         private void Update()
         {
-            if(_playerMotor != null)
+            if (_playerMotor != null)
             {
                 float velocity = _playerMotor.Velocity;
                 if (velocity > 0f)
@@ -45,14 +50,14 @@ namespace RPG.Player
                     animatePlayer("Walk", velocity);
                 }
             }
-            
+
         }
 
 
         public void GetNewPlayer()
         {
             _player = GameManager.Instance.player;
-            if(_player == null)
+            if (_player == null)
             {
                 Debug.Log("No Player Set!");
                 return;
@@ -65,14 +70,15 @@ namespace RPG.Player
 
         public void movePlayer(RaycastHit hit)
         {
+
             _selectedObject = hit.collider.gameObject;
-            if (_playerMotor != null)
+            if (_playerMotor != null && !isMenuOpen)
             {
                 if (_selectedObject.TryGetComponent(out Interactable interactable)) _playerMotor.MoveToDestination(interactable._interactionTransform.position);
                 else _playerMotor.MoveToDestination(hit.point);
             }
-                
-            else Debug.Log("No player to move");
+
+            else Debug.Log("No player to move or menu is open");
         }
 
         public void faceObject(GameObject gameObject)
@@ -84,11 +90,23 @@ namespace RPG.Player
         {
             if (_selectedObject.tag == "Interactable")
             {
-                faceObject(_selectedObject); 
+                faceObject(_selectedObject);
                 StartCoroutine(ExecuteAfterDelay(_selectedObject.GetComponent<Interactable>().Interact, InteractWaitTime));
             }
 
             _selectedObject = null;
+        }
+
+        public void menuStatusChanged(bool open)
+        {
+            isMenuOpen = open;
+
+            if(open)
+            {
+                _playerMotor.stopMovement();
+            }
+
+            Debug.Log("menu: " + open);
         }
 
         private void animatePlayer(string type, float velocity)

@@ -9,15 +9,15 @@ public class ItemPickup : Interactable
     [SerializeField] private Color mouseOverColour, originalColor;
 
     private string _sceneName;
-    private string _filepath;
+    private string _file;
 
 
     private void Start()
     {
         _sceneName = SceneManager.GetActiveScene().name;
-        _filepath = "Assets/Scenes/" + _sceneName + "/data.json";
+        _file = "/" +  _sceneName + "/data.json";
 
-        if (!DataManager.Instance.readObjectData(_filepath, name))
+        if (!DataManager.Instance.readObjectData(_file, name))
         {
             Debug.Log("Object " + name + " is set to deactive");
             Destroy(gameObject);
@@ -46,7 +46,7 @@ public class ItemPickup : Interactable
 
         //set object permenantly deactive 
 
-        DataManager.Instance.writeLevelData(_filepath, name, false);
+        DataManager.Instance.writeLevelData(_file, name, false);
 
         if (Inventory.Instance.Add(item))
             Destroy(gameObject);

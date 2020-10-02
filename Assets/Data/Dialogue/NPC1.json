@@ -50,7 +50,7 @@
       "NPC1_question"
     ],
     "statesToSetFalse": null,
-    "active": false,
+    "active": true,
     "entryState": 0,
     "newEntryState": 0
   },

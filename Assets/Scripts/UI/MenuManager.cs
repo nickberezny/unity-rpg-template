@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class MenuManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] Canvas InventoryMenu;
+
+    private void Awake()
     {
-        
+        DontDestroyOnLoad(this);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void toggleInventoryMenu(bool open)
     {
-        
+        InventoryMenu.enabled = open;
     }
 }

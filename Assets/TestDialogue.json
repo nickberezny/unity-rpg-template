@@ -10,10 +10,9 @@
     "newEntryState": 0
   },
   "1": {
-    "text": "What do you want",
+    "text": "Hello",
     "pointer": [
-      2,
-      3
+      2
     ],
     "states": [
       "null"
@@ -25,29 +24,30 @@
     "newEntryState": 0
   },
   "2": {
-    "text": "Nothing, bye",
+    "text": "What's his name?",
     "pointer": [
-      0
+      3,
+      4
     ],
     "states": [
       "null"
     ],
     "statesToSetTrue": null,
     "statesToSetFalse": null,
-    "active": false,
+    "active": true,
     "entryState": 0,
     "newEntryState": 0
   },
   "3": {
-    "text": "What's your name?",
+    "text": "I don't know",
     "pointer": [
-      4
+      0
     ],
     "states": [
-      "NPC1_question"
+      "null"
     ],
     "statesToSetTrue": [
-      "NPC2_name"
+      "NPC1_question"
     ],
     "statesToSetFalse": null,
     "active": true,
@@ -57,6 +57,20 @@
   "4": {
     "text": "Donald Duck",
     "pointer": [
+      5
+    ],
+    "states": [
+      "NPC2_name"
+    ],
+    "statesToSetTrue": null,
+    "statesToSetFalse": null,
+    "active": true,
+    "entryState": 0,
+    "newEntryState": 0
+  },
+  "5": {
+    "text": "Thanks",
+    "pointer": [
       0
     ],
     "states": [
@@ -66,6 +80,6 @@
     "statesToSetFalse": null,
     "active": true,
     "entryState": 0,
-    "newEntryState": 0
+    "newEntryState": 5
   }
 }

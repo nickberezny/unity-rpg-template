@@ -18,7 +18,10 @@ public class DataManager : MonoBehaviour
     private Dictionary<int, DialogueData> dialogueDictionary;
     private Dictionary<string, bool> stateDictionary;
 
-    private const string pathToStates = "Assets/Data/States.json";
+
+    private string pathToScenes;
+    private string pathToData;
+    private string pathToStates;
 
     private void Awake()
     {
@@ -32,6 +35,22 @@ public class DataManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(this);
             settings.Formatting = Formatting.Indented;
+
+            if (!Application.isEditor)
+            {
+                pathToScenes = "../Assets/Scenes";
+                pathToData = "../Assets/Data";
+                pathToStates = "../Assets/Data/States.json";
+                Debug.Log("Welcome to the player");
+            }
+            else
+            {
+                pathToScenes = "Assets/Scenes";
+                pathToData = "Assets/Data";
+                pathToStates = "Assets/Data/States.json";
+                Debug.Log("Welcome to the editor");
+            }
+
             stateDictionary = loadGameState();
             //stateDictionary.Add("null", true);
             if(stateDictionary.TryGetValue("null", out bool trash))
@@ -42,7 +61,12 @@ public class DataManager : MonoBehaviour
             {
                 stateDictionary.Add("null", true);
             }
+
+            
+            
         }
+
+        
 
     }
 
@@ -50,7 +74,7 @@ public class DataManager : MonoBehaviour
     {
         //RESETS ALL SAVED DATA!
 
-        string filepath = "Assets/Scenes";
+        string filepath = pathToScenes;
 
         string[] levels = Directory.GetDirectories(filepath);
     
@@ -69,7 +93,7 @@ public class DataManager : MonoBehaviour
 
         }
 
-        string[] dialogue = Directory.GetFiles("Assets/Data/Dialogue","*json");
+        string[] dialogue = Directory.GetFiles(pathToData + "/Dialogue","*json");
         
 
         for(int i = 0; i< dialogue.Length; i++)
@@ -78,6 +102,11 @@ public class DataManager : MonoBehaviour
             dialogue[i].Replace("\\","/");
             Dictionary<int, DialogueData> dict = readDialogueData(dialogue[i]);
             dict[-1].entryState = 1;
+
+            for(int k = 1; k<dict.Count; k++)
+            {
+                dict[k].active = true;
+            }
             writeDialogueData(dialogue[i], dict);
 
         }
@@ -162,7 +191,7 @@ public class DataManager : MonoBehaviour
 
     public void initializeLevelData(string sceneName)
     {
-        string filepath = "Assets/Scenes/" + sceneName;
+        string filepath = pathToScenes + "/" + sceneName;
         if (!File.Exists(filepath + "/Data.json"))
         {
             StreamReader reader = new StreamReader(filepath + "/Data_original.json");
@@ -182,32 +211,32 @@ public class DataManager : MonoBehaviour
 
     }
 
-    public bool readObjectData(string filepath, string objectName)
+    public bool readObjectData(string file, string objectName)
     {
-        StreamReader reader = new StreamReader(filepath);
+        StreamReader reader = new StreamReader(pathToScenes + file);
        
         return JsonConvert.DeserializeObject<Dictionary<string, bool>>(reader.ReadToEnd())[objectName];
     }
 
-    public Dictionary<int,DialogueData> readDialogueData(string filepath)
+    public Dictionary<int,DialogueData> readDialogueData(string filename)
     {
      
         dialogueDictionary = new Dictionary<int, DialogueData>();
-        StreamReader reader = new StreamReader(filepath);
+        StreamReader reader = new StreamReader(pathToData + "/Dialogue/" + filename);
         dialogueDictionary = JsonConvert.DeserializeObject<Dictionary<int, DialogueData>>(reader.ReadToEnd(), settings);
         Debug.Log(dialogueDictionary[1].text);
         reader.Close();
 
-        StreamWriter writer = new StreamWriter("Assets/TestDialogue.json", false);
-        writer.WriteLine(JsonConvert.SerializeObject(dialogueDictionary, Formatting.Indented));
-        writer.Close();
+        //StreamWriter writer = new StreamWriter("../Assets/TestDialogue.json", false);
+        //writer.WriteLine(JsonConvert.SerializeObject(dialogueDictionary, Formatting.Indented));
+        //writer.Close();
 
         return dialogueDictionary;
     }
 
-    public void writeDialogueData(string filepath, Dictionary<int, DialogueData> dict)
+    public void writeDialogueData(string filename, Dictionary<int, DialogueData> dict)
     {
-        StreamWriter writer = new StreamWriter(filepath, false);
+        StreamWriter writer = new StreamWriter(pathToData +"/Dialogue/" + filename, false);
         writer.WriteLine(JsonConvert.SerializeObject(dict, Formatting.Indented));
         writer.Close();
 
@@ -217,10 +246,10 @@ public class DataManager : MonoBehaviour
     }
 
 
-    public Dictionary<string, bool> readLevelData(string filepath)
+    public Dictionary<string, bool> readLevelData(string file)
     {
         levelDictionary = new Dictionary<string, bool>();
-        StreamReader reader = new StreamReader(filepath);
+        StreamReader reader = new StreamReader(pathToScenes + file);
         levelDictionary = JsonConvert.DeserializeObject<Dictionary<string, bool>>(reader.ReadToEnd());
         reader.Close();
 
@@ -228,16 +257,16 @@ public class DataManager : MonoBehaviour
 
     }
 
-    public void writeLevelData(string filepath, string variable, bool value)
+    public void writeLevelData(string file, string variable, bool value)
     {
         levelDictionary = new Dictionary<string, bool>();
-        StreamReader reader = new StreamReader(filepath);
+        StreamReader reader = new StreamReader(pathToScenes + file);
         levelDictionary = JsonConvert.DeserializeObject<Dictionary<string, bool>>(reader.ReadToEnd());
         reader.Close();
 
         levelDictionary[variable] = value;
 
-        StreamWriter writer = new StreamWriter(filepath, false);
+        StreamWriter writer = new StreamWriter(pathToScenes + file, false);
         writer.WriteLine(JsonConvert.SerializeObject(levelDictionary));
         writer.Close();
 

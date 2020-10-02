@@ -32,7 +32,7 @@ public class DialogueManager2 : MonoBehaviour
 
     public void activateNewDialogue(string name, Sprite portrait)
     {
-        _dialogueDictionary = DataManager.Instance.readDialogueData("Assets/Data/Dialogue/" + name + ".json");
+        _dialogueDictionary = DataManager.Instance.readDialogueData(name + ".json");
         _name = name;
 
         if (!portrait) portrait = defaultPortrait;
@@ -44,7 +44,7 @@ public class DialogueManager2 : MonoBehaviour
 
     public void closeDialogue()
     {
-        DataManager.Instance.writeDialogueData("Assets/Data/Dialogue/" + _name + ".json", _dialogueDictionary);
+        DataManager.Instance.writeDialogueData(_name + ".json", _dialogueDictionary);
         dialogueMenu.closeDialogueMenu();
     }
 
