@@ -20,9 +20,6 @@ namespace RPG.Player
         private delegate void MethodTemp();
 
         private const float InteractWaitTime = 0.5f;
-
-
-        //Singleton Player Manager...
         public static PlayerManager Instance { get; private set; }
         private void Awake()
         {
@@ -88,11 +85,15 @@ namespace RPG.Player
 
         public void reachedDestination()
         {
-            if (_selectedObject.tag == "Interactable")
+            if (_selectedObject)
             {
-                faceObject(_selectedObject);
-                StartCoroutine(ExecuteAfterDelay(_selectedObject.GetComponent<Interactable>().Interact, InteractWaitTime));
+                if (_selectedObject.tag == "Interactable")
+                {
+                    faceObject(_selectedObject);
+                    StartCoroutine(ExecuteAfterDelay(_selectedObject.GetComponent<Interactable>().Interact, InteractWaitTime));
+                }
             }
+            
 
             _selectedObject = null;
         }
@@ -101,8 +102,9 @@ namespace RPG.Player
         {
             isMenuOpen = open;
 
-            if(open)
+            if(open && _playerMotor)
             {
+                _selectedObject = null;
                 _playerMotor.stopMovement();
             }
 

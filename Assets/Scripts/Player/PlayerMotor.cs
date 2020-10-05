@@ -75,6 +75,7 @@ namespace RPG.Player
         public void stopMovement()
         {
             StopCoroutine(TrackMovement());
+            StopAllCoroutines();
             StartCoroutine(stopSlowly(1));
         }
 

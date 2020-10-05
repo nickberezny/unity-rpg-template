@@ -11,10 +11,15 @@ namespace RPG.Mouse
 
         [SerializeField] private UnityEvent<RaycastHit> GroundSelected;
         [SerializeField] private UnityEvent<RaycastHit> InteractableSelected;
+        [SerializeField] private Highlighter highlighter;
 
         private Camera _camera;
 
+        public bool menuOpen { private set; get; }
+
         private RaycastHit _hit;
+        private GameObject _cursorOverGameObject;
+        private GameObject _previousCursorOverGameObject;
 
         private const string groundTag = "Ground";
         private const string interactableTag = "Interactable";
@@ -22,14 +27,15 @@ namespace RPG.Mouse
         private void Awake()
         {
             DontDestroyOnLoad(this);
+            _previousCursorOverGameObject = null;
         }
 
         private void Update()
         {
 
-            if(_camera == null)
+            if (_camera == null)
             {
-                if(Camera.main == null)
+                if (Camera.main == null)
                 {
                     //Debug.Log("No Camera in Scene for Raycasting...");
                     return;
@@ -46,13 +52,24 @@ namespace RPG.Mouse
                 //make sure cursor is menu cursor
                 return;
             }
-            else
+            else if (!menuOpen)
             {
 
                 if (CheckRaycastCollision())
                 {
-                    //change cursor, highlight, etc
+
+                    if (_cursorOverGameObject != _previousCursorOverGameObject)
+                    {
+                        if (_cursorOverGameObject.tag == "Interactable") highlighter.highlightObject(_cursorOverGameObject);
+                        else highlighter.deHighlightObject();
+                    }
+
                 }
+                else
+                {
+                    highlighter.deHighlightObject();
+                }
+
             }
 
             if (Input.GetMouseButtonDown(0))
@@ -68,7 +85,17 @@ namespace RPG.Mouse
         {
             //use raycast to find gameobject intersecting with cursor
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-            return (Physics.Raycast(ray, out _hit));
+            if (Physics.Raycast(ray, out _hit))
+            {
+                _previousCursorOverGameObject = _cursorOverGameObject;
+                _cursorOverGameObject = _hit.collider.gameObject;
+                return true;
+            }
+
+            _previousCursorOverGameObject = _cursorOverGameObject;
+            _cursorOverGameObject = null;
+            return false;
+           
         }
 
         private void HandleMouseClick()
@@ -79,7 +106,7 @@ namespace RPG.Mouse
                 case groundTag:
                     GroundSelected.Invoke(_hit);
                     break;
-                case interactableTag: 
+                case interactableTag:
                     InteractableSelected.Invoke(_hit);
                     break;
                 default:
@@ -88,9 +115,10 @@ namespace RPG.Mouse
             return;
         }
 
-        public void testing()
+        public void menuStatusChanged(bool open)
         {
-            return;
-        }    
+            menuOpen = open;
+        }
     }
+    
 }

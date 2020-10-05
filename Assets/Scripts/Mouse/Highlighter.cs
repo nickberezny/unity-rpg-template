@@ -4,15 +4,28 @@ using UnityEngine;
 
 public class Highlighter : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+   
+    
+    [SerializeField] private Color highlightColor;
+
+    private Color previousColor;
+    private GameObject highlightedObject;
+    
+
+    public void highlightObject(GameObject gameObject)
     {
-        
+        if (highlightedObject) highlightedObject.GetComponent<Renderer>().material.color = previousColor;
+        highlightedObject = gameObject;
+
+        Renderer renderer = gameObject.GetComponent<Renderer>();
+        previousColor = renderer.material.color;
+        renderer.material.color = highlightColor;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void deHighlightObject()
     {
-        
+        if (highlightedObject) highlightedObject.GetComponent<Renderer>().material.color = previousColor;
+        highlightedObject = null;
     }
 }
+ 
