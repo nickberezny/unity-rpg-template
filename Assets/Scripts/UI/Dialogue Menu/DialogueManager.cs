@@ -1,22 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
-{ 
+{
     public static DialogueManager Instance { get; private set; }
 
-    [SerializeField] private GameObject viewport;
-    [SerializeField] private Text textBase;
-    [SerializeField] private DialogueMenu dialogueMenu;
-    [SerializeField] private Sprite defaultPortrait; 
-
+    [SerializeField] Sprite defaultPortrait;
+    [SerializeField] DialogueMenu dialogueMenu;
 
     private Dictionary<int, DialogueData> _dialogueDictionary;
     private string _name;
-    DialogueData _data;
-    
+    private int[] _index;
 
     private void Awake()
     {
@@ -32,61 +27,90 @@ public class DialogueManager : MonoBehaviour
         }
 
         _dialogueDictionary = new Dictionary<int, DialogueData>();
-        _data = new DialogueData();
         _name = "";
-    }
-
-    public void setEntryState(string name, int state)
-    {
-        Debug.Log("Entry point for " + name + "is now " + state);
-        
-        if(name == _name)
-        {
-            _dialogueDictionary[-1].entryState = state;
-        }
-        else
-        {
-            Debug.Log("names don't match: " + name + ", " + _name);
-        }
-        
     }
 
     public void activateNewDialogue(string name, Sprite portrait)
     {
-        _dialogueDictionary = DataManager.Instance.readDialogueData("Assets/Data/Dialogue/" + name + ".json");
+        _dialogueDictionary = DataManager.Instance.readDialogueData(name + ".json");
         _name = name;
 
         if (!portrait) portrait = defaultPortrait;
 
-        dialogueMenu.activateNewDialogue(_name, portrait, _dialogueDictionary[-1].entryState);
+        if(dialogueMenu.openDialogueMenu()) addNextLine(new int[] { _dialogueDictionary[-1].entryState });
 
+        //dialogueMenu.activateNewDialogue(_name, portrait, _dialogueDictionary[-1].entryState);
     }
 
-    public void closeDialogue( )
+    public void closeDialogue()
     {
-        DataManager.Instance.writeDialogueData("Assets/Data/Dialogue/" + _name + ".json", _dialogueDictionary);
-        dialogueMenu.closeMenu();
-        _name = null;
-        
-      
+        DataManager.Instance.writeDialogueData(_name + ".json", _dialogueDictionary);
+        dialogueMenu.closeDialogueMenu();
     }
 
-
-    public DialogueData getNextLine(string name, int selection)
+    public void continueToNextLine(int index, bool markAsSelected = false)
     {
-        if(_name == name)
+        DialogueData dialogueData = _dialogueDictionary[_index[index]];
+        DataManager.Instance.setGameStateTrue(dialogueData.statesToSetTrue);
+        DataManager.Instance.setGameStateFalse(dialogueData.statesToSetFalse);
+
+        if (dialogueData.newEntryState > 0) _dialogueDictionary[-1].entryState = dialogueData.newEntryState;
+
+        Debug.Log("mark as selected:" + markAsSelected);
+        if (markAsSelected) dialogueData.active = false;
+
+        addNextLine(dialogueData.pointer);
+        Debug.Log("Continue to " + index.ToString());
+    }
+
+    private void addNextLine(int[] pointer)
+    {
+        if (pointer[0] == 0)
         {
-            if (!_dialogueDictionary.TryGetValue(selection, out _data))
-            {
-                Debug.Log("Cannot access requested dialogue string at " + selection.ToString() + " for file " + name);
-                return null;
-            }
-            return _data;
+            closeDialogue();
+            return;
         }
+        
+        int len = pointer.Length;
+        if(len == 1)
+        {
+            dialogueMenu.addText(_dialogueDictionary[pointer[0]].text, _name);
+            _index = new int[1];
+            _index[0] =  pointer[0];
+        }
+        else if(len > 1)
+        {
+            _index = new int[5];
+            string[] optionText = new string[5];
+            bool[] isActive = new bool[5];
 
-        Debug.Log("names don't match: " + name + ", " + _name);
-        return null;
+            int ii = 0;
 
+            for (int i = 0; i < len; i++)
+            {
+                
+                bool checkStates = true;
+
+                for (int j = 0; j < _dialogueDictionary[pointer[i]].states.Length; j++)
+                {
+                    if (!DataManager.Instance.getGameState(_dialogueDictionary[pointer[i]].states[j]))
+                    {
+                        checkStates = false;
+                    }
+                }
+
+                if(checkStates)
+                {
+                    optionText[ii] = _dialogueDictionary[pointer[i]].text;
+                    _index[ii] = pointer[i];
+                    isActive[ii] = _dialogueDictionary[pointer[i]].active;
+                    Debug.Log(isActive[ii]);
+                    ii++;
+                }
+                
+            }
+
+            dialogueMenu.addOptions(optionText, isActive, ii );
+        }
     }
-  
 }

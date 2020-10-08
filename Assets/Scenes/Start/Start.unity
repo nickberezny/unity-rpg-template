@@ -573,11 +573,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7612963912889298589, guid: 90e859544c614944cb485d1234939a44, type: 3}
       propertyPath: ConnectingDoorNumber
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7612963912889298589, guid: 90e859544c614944cb485d1234939a44, type: 3}
       propertyPath: ConnectingScene
-      value: TestScene
+      value: BlockedScene
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90e859544c614944cb485d1234939a44, type: 3}

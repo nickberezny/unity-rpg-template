@@ -7,6 +7,7 @@ using System.ComponentModel.Design;
 using UnityEditor;
 using UnityEngine.Internal.VR;
 using System.Dynamic;
+using System.Linq;
 
 public class DataManager : MonoBehaviour
 {
@@ -93,21 +94,22 @@ public class DataManager : MonoBehaviour
 
         }
 
-        string[] dialogue = Directory.GetFiles(pathToData + "/Dialogue","*json");
+        string[] dialogue = Directory.GetFiles(pathToData + "/Dialogue", "*json") ;
         
 
         for(int i = 0; i< dialogue.Length; i++)
         {
-            
+
+            Debug.Log(Path.GetFileName(dialogue[i]));
             dialogue[i].Replace("\\","/");
-            Dictionary<int, DialogueData> dict = readDialogueData(dialogue[i]);
+            Dictionary<int, DialogueData> dict = readDialogueData(Path.GetFileName(dialogue[i]));
             dict[-1].entryState = 1;
 
             for(int k = 1; k<dict.Count; k++)
             {
                 dict[k].active = true;
             }
-            writeDialogueData(dialogue[i], dict);
+            writeDialogueData(Path.GetFileName(dialogue[i]), dict);
 
         }
 

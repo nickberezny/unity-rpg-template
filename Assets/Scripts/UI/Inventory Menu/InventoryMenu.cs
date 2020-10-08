@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class InventoryMenu : MonoBehaviour
 {
+
     private void Awake()
     {
         DontDestroyOnLoad(this);

@@ -46,7 +46,7 @@ public class MenuManager : MonoBehaviour
         if (_menuOpen) return;
 
         _menuOpen = true;
-        DialogueManager2.Instance.activateNewDialogue(name, portrait);
+        DialogueManager.Instance.activateNewDialogue(name, portrait);
         HUD.enabled = false;
         GameManager.Instance.setMenuOpen(true);
     }
@@ -54,7 +54,7 @@ public class MenuManager : MonoBehaviour
     public void closeDialogueMenu()
     {
         _menuOpen = false;
-        DialogueManager2.Instance.closeDialogue();
+        DialogueManager.Instance.closeDialogue();
         HUD.enabled = true;
         GameManager.Instance.setMenuOpen(false);
     }

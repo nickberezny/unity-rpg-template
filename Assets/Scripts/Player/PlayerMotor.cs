@@ -63,6 +63,8 @@ namespace RPG.Player
 
             while (Mathf.Abs(Quaternion.Dot(_player.transform.rotation, Quaternion.LookRotation(dir))) < 1f - rotationMinThreshold)
             {
+                if (!target) break;
+
                 dir = target.position - _player.transform.position;
                 dir.y = 0;
                 _player.transform.rotation = Quaternion.Slerp(_player.transform.rotation, Quaternion.LookRotation(dir), speed * waitTimeForRotation);

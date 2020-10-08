@@ -1,239 +1,173 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-
 public class DialogueMenu : MonoBehaviour
-{ 
+{
 
     [SerializeField] private Text textBase;
-    [SerializeField] private Button continueButtonBase;
     [SerializeField] private GameObject viewport;
+    [SerializeField] private GameObject content;
     [SerializeField] private Scrollbar scrollbar;
-    [SerializeField] private DialogueManager dialogueManager;
-    [SerializeField] private CameraManager cameraManager;
-    [SerializeField] private Image portraitImage;
-    [SerializeField] private Color textDeactivatedColor;
+    [SerializeField] private Button continueButtonBase;
+    [SerializeField] Color selectedColor;
 
-    private Canvas dialogueMenuCanvas;
-    private DialogueData[] _dialogueArray = new DialogueData[6];
-    private Text _previousText;
-    private Text _previousTextSave;
+    private Text[] _addedText = new Text[100];
+    private int _textIndex = 0;
     private Text _currentText;
+    private Text _previousText;
+    private int[] _optionIndices = new int[5];
     private RectTransform viewportRectTransform;
-    private string _activeName;
-    private GameObject[] _addedText = new GameObject[100];
-    private int _addedTextIndex = 0;
+    private Canvas dialogueMenuCanvas;
     private Button _continueButton = null;
-    private List<GameObject> toDestroy = new List<GameObject>();
-
+    private float _defualtContentHeight;
 
     private const float defaultVerticalOffset = 10f;
     private const float defaultHorizontalOffset = 10f;
-    private const float horizontalIndent = 15f;
-
+    private const float defaultHorizontalIndent = 20f;
+    private const float scrollbarVelocity = 0.01f;
 
     private void Awake()
     {
         DontDestroyOnLoad(this);
-
-        _currentText = textBase;
-        viewportRectTransform = viewport.GetComponent<RectTransform>();
+        viewportRectTransform = content.GetComponent<RectTransform>();
+        _defualtContentHeight = viewportRectTransform.sizeDelta.y;
+    
         dialogueMenuCanvas = gameObject.GetComponent<Canvas>();
         dialogueMenuCanvas.enabled = false;
-        
-    }
-    
-    public void activateNewDialogue(string name, Sprite portrait, int entryState)
-    {
-        if(_activeName != null || dialogueMenuCanvas.enabled)
-        {
-            Debug.Log("Dialogue menu already open");
-            return;
-        }
 
-        if(portrait != null)
-        {
-            portraitImage.sprite = portrait;
-        }
-
-
-        _activeName = name;
-        dialogueMenuCanvas.enabled = true;
-        cameraManager.moveCameraForDialogue(true);
-        Debug.Log(_activeName);
-        addNextLine(_activeName, new int[] { entryState });
- 
+        _addedText[0] = textBase;
     }
 
-    public void closeMenu()
+    public void addText(string text, string speakerName, bool addContinueButton = true, float horizontalIndent = 0)
     {
-        dialogueMenuCanvas.enabled = false;
-        cameraManager.moveCameraForDialogue(false);
-        _activeName = null;
-        _currentText = textBase;
-        _previousText = _currentText;
+        if (_continueButton) GameObject.Destroy(_continueButton.gameObject);
+        _currentText = Instantiate(textBase);
+        _previousText = _addedText[_textIndex];
+        addToTextArray(_currentText);
 
-        for(int i = 0; i < _addedTextIndex; i++)
-        {
-            Destroy(_addedText[i]);
-        }
+        string nameColor = "lightblue";
+        if (speakerName == "You") nameColor = "#BE9CD0";
 
-        Array.Clear(_addedText, 0, _addedTextIndex+1);
-        _addedTextIndex = 0;
-    }
+        _currentText.text = "<color=" + nameColor + "><size=20>" + speakerName + "</size></color> : " + text;
 
+        _currentText.transform.SetParent(content.transform);
+        _currentText.transform.position = new Vector2(_previousText.transform.position.x, _previousText.transform.position.y - _previousText.preferredHeight - defaultVerticalOffset);
+        _currentText.rectTransform.offsetMax = new Vector2(_previousText.rectTransform.offsetMax.x, _currentText.rectTransform.offsetMax.y);
+        _currentText.rectTransform.offsetMin = new Vector2(textBase.rectTransform.offsetMin.x + defaultHorizontalOffset + horizontalIndent, _currentText.rectTransform.offsetMin.y);
 
-    private void addNextLine(string name, int[] selection)
-    {
-        toDestroy.Clear();
-        bool addNPCName = false;
+        viewportRectTransform.sizeDelta += new Vector2(0, _currentText.preferredHeight);// + defaultVerticalOffset);
 
-        if(selection[0] == 0)
-        {
-            DialogueManager.Instance.closeDialogue();
-            return;
-        }
-        if(selection[0] == -1)
-        {
-            selection [0] = dialogueManager.getNextLine(name, -1).entryState;
-        }
-
-        bool tagAsOption = false;
-        int len = selection.Length;
-        float horizontalOffset = defaultHorizontalOffset;
-
-        if(_continueButton != null) Destroy(_continueButton.gameObject);
-
-        if (len > 1)
-        {
-            tagAsOption = true;
-            horizontalOffset += horizontalIndent;
-            _previousTextSave = _currentText;
-        }
-
-        for(int i = 0; i < len; i++)
-        {
-            _dialogueArray[i] = dialogueManager.getNextLine(name, selection[i]);
-
-            bool checkStates = true;
-
-            for(int j = 0; j < _dialogueArray[i].states.Length; j++)
-            {
-                Debug.Log(i.ToString() + "," + j.ToString());
-                if(!DataManager.Instance.getGameState(_dialogueArray[i].states[j]))
-                {
-                    checkStates = false;
-                }
-            }
-
-            if (len == 1) addNPCName = true;
-
-            if (checkStates) addText(_dialogueArray[i], defaultVerticalOffset, horizontalOffset, tagAsOption, addNPCName);
-        }
-
-        if (len == 1 && _dialogueArray[0].pointer.Length > 1)
-        {
-            StartCoroutine(delayedAddLine(1f, name, _dialogueArray[0].pointer));
-        }
-        else if(len == 1 && _dialogueArray[0].pointer.Length == 1)
+        if(addContinueButton)
         {
             Debug.Log("Creating Button");
-            _continueButton = Instantiate(continueButtonBase, viewport.transform);
-            addObjectToList(_continueButton.gameObject);
-            if (_dialogueArray[len - 1].newEntryState > 0) _continueButton.onClick.AddListener(delegate { dialogueManager.setEntryState(name, _dialogueArray[len - 1].newEntryState); });
-            _continueButton.transform.position = new Vector2(_continueButton.transform.position.x, _previousText.transform.position.y - _previousText.preferredHeight - defaultVerticalOffset);
-            _continueButton.onClick.AddListener(delegate { addNextLine(name, _dialogueArray[len - 1].pointer);});
-           
+            _continueButton = Instantiate(continueButtonBase, content.transform);
+            _continueButton.transform.position = new Vector2(_continueButton.transform.position.x, _currentText.transform.position.y - _currentText.preferredHeight);
+            _continueButton.onClick.AddListener(delegate { DialogueManager.Instance.continueToNextLine(0); });
         }
-        
-        
-        return;
-    }
 
-    private IEnumerator delayedAddLine(float delay, string name, int[] selection)
-    {
-        yield return new WaitForSeconds(delay);
-        addNextLine(name, selection);
+        StartCoroutine(zeroScrollbar());
 
     }
 
-    private void deleteText()
+    public void addOptions(string[] text, bool[] isActive, int len)
     {
-        foreach(GameObject gameObject in toDestroy)
+        for(int i = 0; i < len; i++)
         {
-            GameObject.Destroy(gameObject);
+            addText(text[i], i.ToString(), false, defaultHorizontalIndent);
+            //if (!isActive[i]) _addedText[_textIndex].color = selectedColor;
+            _optionIndices[i] = _textIndex;
+
+            Button tempButton = _addedText[_textIndex].GetComponent<Button>();
+            if (!isActive[i])
+            {
+                ColorBlock cb = tempButton.colors;
+                cb.normalColor = selectedColor;
+                tempButton.colors = cb;
+            }
+            tempButton.enabled = true;
+            int tempIndex = i;
+            tempButton.onClick.AddListener(delegate { deleteOptions(tempIndex); });
+
         }
-        
+
+        StartCoroutine(zeroScrollbar());
     }
 
-    private void addText(DialogueData dialogueData, float verticalOffset, float horizontalOffset, bool tagAsOption, bool addNPCName = true, bool addYou = false)
+    private void deleteOptions(int exception)
     {
-        if (_currentText != null)
+        string saveException = "";
+
+        for(int i = 0; i < _optionIndices.Length; i++)
         {
-            _previousText = _currentText;
-            _currentText = Instantiate(textBase);
-            toDestroy.Add(_currentText.gameObject);
+            if (_optionIndices[i] == 0) break;
+            Debug.Log("Option: " + _optionIndices[i]);
+            if (i == exception) saveException = _addedText[_optionIndices[i]].text;
+            Destroy(_addedText[_optionIndices[i]].gameObject);
+            _textIndex--;
+        }
 
-            addObjectToList(_currentText.gameObject);
+        saveException = saveException.Split(':')[1];
 
-            if (addNPCName) _currentText.text = _activeName.ToUpper() + " : " + dialogueData.text;
-            else if (addYou)
-            {
-                _currentText.text = "YOU : " + dialogueData.text;
-                _previousText = _previousTextSave;
-            }
-            else _currentText.text = dialogueData.text;
+        addText(saveException, "You", false);
+  
+        DialogueManager.Instance.continueToNextLine(exception, true);
+    }    
 
-           
+    public bool openDialogueMenu()
+    {
+        if (!dialogueMenuCanvas.enabled)
+        {
+            dialogueMenuCanvas.enabled = true;
+            _textIndex = 0;
+            _addedText = new Text[100];
+            _addedText[0] = textBase;
+            _optionIndices = new int[5];
 
-            _currentText.transform.SetParent(viewport.transform);
-            _currentText.transform.position = new Vector2(_previousText.transform.position.x, _previousText.transform.position.y - _previousText.preferredHeight - verticalOffset);
-            _currentText.rectTransform.offsetMax = new Vector2(_previousText.rectTransform.offsetMax.x, _currentText.rectTransform.offsetMax.y);
-            _currentText.rectTransform.offsetMin = new Vector2(textBase.rectTransform.offsetMin.x + horizontalOffset, _currentText.rectTransform.offsetMin.y);
-            
-            if (tagAsOption)
-            {
-                string name = _activeName;
-                _currentText.tag = "DialogueOption";
-                Button tempButton = _currentText.GetComponent<Button>();
-                tempButton.enabled = true;
-                tempButton.onClick.AddListener(delegate { deleteText(); });
-                tempButton.onClick.AddListener(delegate {addText(dialogueData, verticalOffset, horizontalOffset - horizontalIndent, false, false, true); });
-                tempButton.onClick.AddListener(delegate { StartCoroutine(delayedAddLine(1f, name, _dialogueArray[0].pointer)); });//addNextLine(_activeName, dialogueData.pointer);});
-                tempButton.onClick.AddListener(delegate { DataManager.Instance.setGameStateTrue(dialogueData.statesToSetTrue); });
-                tempButton.onClick.AddListener(delegate { DataManager.Instance.setGameStateFalse(dialogueData.statesToSetFalse); });
-                if (dialogueData.newEntryState > 0) tempButton.onClick.AddListener(delegate { dialogueManager.setEntryState(name, dialogueData.newEntryState);  });
-                Debug.Log("Selection added");
-
-            }
-
-            viewportRectTransform.sizeDelta += new Vector2(0, _currentText.preferredHeight + verticalOffset);
-            StartCoroutine(zeroScrollbar());
+            return true;
 
         }
         else
         {
-            Debug.Log("Adding text failed");
+            Debug.Log("Dialogue menu already open");
+            return false;
         }
+    }
+
+    public void closeDialogueMenu()
+    {
+        for(int i = 1; i <= _textIndex; i++)
+        {
+            GameObject.Destroy(_addedText[i].gameObject);
+            Debug.Log(i);
+        }
+        _textIndex = 0;
+        viewportRectTransform.sizeDelta = new Vector2(viewportRectTransform.sizeDelta.x, _defualtContentHeight);
+        dialogueMenuCanvas.enabled = false;
         
+
     }
 
     private IEnumerator zeroScrollbar()
     {
-        yield return null;
-        scrollbar.value = 0;
+        yield return new WaitForEndOfFrame();
+        Debug.Log("Zeroing Scrollbar");
+        while(scrollbar.value > 0)
+        {
+            scrollbar.value -= scrollbarVelocity;
+            yield return null;
+        }
+        
+        
     }
 
-    private void addObjectToList(GameObject go)
+    public void addToTextArray(Text newText)
     {
-        _addedText[_addedTextIndex] = go;
-        _addedTextIndex += 1;
-        return;
+        _textIndex++;
+        _addedText[_textIndex] = newText;
+        Debug.Log(_textIndex);
     }
-
-
 }

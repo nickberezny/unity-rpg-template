@@ -54,15 +54,4 @@ public class ItemPickup : Interactable
         
     }
 
-    void OnMouseOver()
-    {
-        // Change the color of the GameObject to red when the mouse is over GameObject
-        GetComponent<MeshRenderer>().material.color = mouseOverColour;
-    }
-
-    void OnMouseExit()
-    {
-        // Reset the color of the GameObject back to normal
-        GetComponent<MeshRenderer>().material.color = originalColor;
-    }
 }

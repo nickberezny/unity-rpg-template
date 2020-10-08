@@ -22,15 +22,19 @@ public class InventorySlot : MonoBehaviour
         icon.enabled = false;
     }
 
-    public void onRemoveButton()
+    public void onItemButton()
     {
         
-
         if(item != null)
         {
             item.Use();
         }
 
+        Inventory.Instance.Remove(item);
+    }
+
+    public void onRemoveButton()
+    {
         Inventory.Instance.Remove(item);
     }
 }
